@@ -242,6 +242,9 @@ namespace pcl
             return (has_shifted_);
           }
 
+          pcl::PointCloud<pcl::PointXYZI>::Ptr
+          getWorld();
+
         private:
           
           /** \brief Allocates all GPU internal buffers.

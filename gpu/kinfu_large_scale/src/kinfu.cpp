@@ -254,6 +254,30 @@ pcl::gpu::kinfuLS::KinfuTracker::reset ()
   has_shifted_=false;
 }
 
+pcl::PointCloud<pcl::PointXYZI>::Ptr pcl::gpu::kinfuLS::KinfuTracker::getWorld()
+{
+    //extract current volume to world model
+    PCL_INFO("Extracting current volume...");
+    cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, true, true); // this will force the extraction of the whole cube.
+    PCL_INFO("Done\n");
+
+    finished_ = true; // TODO maybe we could add a bool param to prevent kinfuLS from exiting after we saved the current world model
+
+    int cloud_size = 0;
+
+    cloud_size = cyclical_.getWorldModel ()->getWorld ()->points.size();
+
+    if (cloud_size <= 0)
+    {
+      PCL_WARN ("World model currently has no points. Skipping save procedure.\n");
+      return pcl::PointCloud<pcl::PointXYZI>::Ptr();
+    }
+    else
+    {
+      return cyclical_.getWorldModel ()->getWorld ();
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
